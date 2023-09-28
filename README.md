@@ -83,8 +83,10 @@ archwiki中vfio的相关操作是双显卡直通的操作, 所以需要配置vfi
     - 而要关掉nvidia驱动则需要关闭所有正在使用的程序, 如窗口管理器, 桌面管理器等
 2. 关闭虚拟机时再将NVIDIA驱动恢复, vfio可以选择不卸载(这里测试不卸载vfio驱动也没有影响)
 
+你可以将本仓库提供的hook脚本拷贝到`/etc/libvirt/hooks`目录下: `sudo cp /path/to/this/repo/scripts/hooks/* /etc/libvirt/hooks`。然后将启动钩子和恢复钩子软连接到`/bin`目录下: `sudo ln -s /path/to/repo/vfio-startup.sh /bin/`, `ln -s /path/to/repo/vfio-teardown.sh /bin/`
+
 ```bash
-# qemu
+# /etc/libvirt/hooks/qemu
 
 OBJECT="$1"
 OPERATION="$2"
@@ -104,19 +106,21 @@ if [[ $OBJECT == "win10" ]]; then
 fi
 ```
 
-启动前触发的命令:
+启动前触发的命令, 调用`/bin/vfio-startup.sh `脚本
 
 ```bash
 /etc/libvirt/hooks/qemu guest_name prepare begin -
 ```
 
-关闭后触发的命令:
+关闭后触发的命令, 调用`/bin/vfio-teardown.sh`
 
 ```bash
 /etc/libvirt/hooks/qemu guest_name release end -
 ```
 
 #### 配置防止休眠
+
+> 拷贝本仓库脚本: `sudo cp /path/to/repo/scripts/libvirt-nosleep@.service /etc/systemd/system/libvirt-nosleep@.service`
 
 添加一个systemd的守护进程, 创建文件`/etc/systemd/system/libvirt-nosleep@.service`, 在其中添加以下内容:
 
