@@ -1,13 +1,4 @@
----
-title: 显卡直通
-author: 66RING
-date: 2021-05-08
-tags: 
-- passthrough
-mathjax: true
----
-
-# 显卡直通
+# 单显卡直通
 
 > 总结只要能用vfio把显卡隔离出来就算成功了, 剩下都是调试问题
 
