@@ -18,11 +18,20 @@
 
 #### 启动vnc功能
 
-后面我们会用另一台电脑通过vnc
+virt-manager安装的虚拟机默认会启动vnc, 不需要多于操作。后面我们会用另一台电脑通过vnc
 
-TODO:
+![](./images/vnc_enable.jpg)
 
-#### (可选)安全virtio驱动
+
+#### (可选)安装virtio驱动
+
+- 下载virtio-win的驱动
+    * [官方仓库](https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md)
+    * [下载链接](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
+- 添加storage存储设备, virtio驱动作为CDROM, 后续会用于安装virtio驱动
+
+![](./images/virtio.jpg)
+
 
 ### 启动宿主机的iommu功能
 
