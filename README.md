@@ -83,7 +83,7 @@ archwiki中vfio的相关操作是双显卡直通的操作, 所以需要配置vfi
     - 而要关掉nvidia驱动则需要关闭所有正在使用的程序, 如窗口管理器, 桌面管理器等
 2. 关闭虚拟机时再将NVIDIA驱动恢复, vfio可以选择不卸载(这里测试不卸载vfio驱动也没有影响)
 
-你可以将本仓库提供的hook脚本拷贝到`/etc/libvirt/hooks`目录下: `sudo cp /path/to/this/repo/scripts/hooks/* /etc/libvirt/hooks`。然后将启动钩子和恢复钩子软连接到`/bin`目录下: `sudo ln -s /path/to/repo/vfio-startup.sh /bin/`, `ln -s /path/to/repo/vfio-teardown.sh /bin/`
+你可以将本仓库提供的hook脚本拷贝到`/etc/libvirt/hooks`目录下: `sudo cp /path/to/this/repo/scripts/hooks/* /etc/libvirt/hooks/`。然后将启动钩子和恢复钩子软连接到`/bin`目录下: `sudo ln -s /path/to/repo/vfio-startup.sh /bin/`, `ln -s /path/to/repo/vfio-teardown.sh /bin/`
 
 ```bash
 # /etc/libvirt/hooks/qemu
@@ -251,6 +251,8 @@ $ ssh username@remote_host -p 22
 
 #### 逐行调试
 
+> 逐行走一下vfio-startup.sh和vfio-teardown.sh中的命令
+
 ##### 卸载module
 
 直接运行如下命令会发现提示被占用, 这时需要先关闭所有的图形程序。
@@ -386,9 +388,40 @@ echo 1 > /sys/class/vtconsole/vtcon0/bind
 
 至此, 把vfio-startup和vfio-teardown的命令都执行了一遍，按理说原本状态应该恢复了。但是你可能会发现你主机上的光标还是没有跳动。不要慌，这时你的主机其实已经可以接收命令了，**盲打图形界面启动命令, 或者在teardown后自动启动图形界面即可**。因为我这时没有使用任何dm, 直接通过startx启动的窗口管理器, 所以我盲打startx来启动我的窗口管理器。
 
-### 启动虚拟机
+### 配置直通并启动虚拟机
+
+#### 配置显卡直通设备
+
+virt-manager中添加pci设备, 选中显卡进行添加。
+
+![](./images/add_gpu_device.jpg)
 
 #### 配置usb设备直通
+
+同样的在virt-manager中添加设备, 添加usb设备。
+
+可以根据vendor和product添加设备, 这样的方式能够自动识别usb设备地址。
+
+![](./images/add_usb_mac.jpg)
+
+也可以手动写死usb设备地址进行添加, 像一些三无设备就没有vendor和product, 所以手动添加。通过在添加设备栏目里手动编写xml文件实现。
+
+首先使用`lsusb`命令查看设备地址
+
+![](./images/lsusb.jpg)
+
+xml格式如下, bus和device除填lsusb中查到的结果, 保存后virt-manager会自动分配内部地址。
+
+```
+<hostdev mode="subsystem" type="usb" managed="yes">
+  <source>
+    <address bus="1" device="12"/>
+  </source>
+</hostdev>
+```
+
+![](./images/add_usb_manual.jpg)
+
 
 #### 安装显卡驱动
 
