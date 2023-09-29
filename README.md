@@ -10,7 +10,7 @@
 
 ![](./images/setup.jpg)
 
-1. 在Overview栏, Firmware(固件)项中选择UEFI, 没有UEFI选项的arch用户可以安装ovmf包后再尝试
+2. 在Overview栏, Firmware(固件)项中选择UEFI, 没有UEFI选项的arch用户可以安装ovmf包后再尝试
 
 ![](./images/uefi.jpg)
 
@@ -22,6 +22,9 @@ virt-manager安装的虚拟机默认会启动vnc, 不需要多于操作。后面
 
 ![](./images/vnc_enable.jpg)
 
+安装完成后调整一下vnc的配置, 配置端口(默认5900), 开启all interfaces
+
+![](./images/vnc_all.jpg)
 
 #### (可选)安装virtio驱动
 
@@ -276,7 +279,7 @@ nvidia              62713856  2 nvidia_uvm,nvidia_modeset
 video                  77824  1 nvidia_modeset
 ```
 
-之后在逐个model卸载
+之后在逐个module卸载
 
 ```
 modprobe -r nvidia_drm
@@ -427,4 +430,17 @@ xml格式如下, bus和device除填lsusb中查到的结果, 保存后virt-manage
 
 1. 你可以等windows自动检测然后安装NVIDIA的驱动
 2. 你可以可以通过vnc连接到主机然后手动安装
+
+
+### 隐藏虚拟机信息
+
+不让软件检测到自己跑在虚拟机上, 在xml的feature栏目中添加
+
+```
+<kvm>
+  <hidden state="on"/>
+</kvm>
+```
+
+![](./images/hide.jpg)
 
